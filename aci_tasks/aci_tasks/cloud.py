@@ -1,16 +1,21 @@
 #!/usr/bin/env python
 import time
+import websocket
 from msrestazure.azure_exceptions import CloudError
 from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.containerinstance import ContainerInstanceManagementClient
-from azure.mgmt.containerinstance.models import (Container,
-                                                 ResourceRequests,
-                                                 ResourceRequirements,
-                                                 EnvironmentVariable,
-                                                 ContainerGroup,
-                                                 OperatingSystemTypes,
-                                                 ContainerGroupRestartPolicy)
+from azure.mgmt.containerinstance.models import (
+    Container,
+    ResourceRequests,
+    ResourceRequirements,
+    EnvironmentVariable,
+    ContainerGroup,
+    OperatingSystemTypes,
+    ContainerGroupRestartPolicy,
+    ContainerExecResponse,
+    ContainerExecRequestTerminalSize
+)
 
 
 class ResourceGroup():
@@ -80,6 +85,17 @@ class ContainerInstance():
                          resources=container_resource_requirements,
                          environment_variables=[endpoint_env])
 
+    def execute_command(self, command):
+        ci_client = _get_ci_client(self.config)
+        res: ContainerExecResponse = ci_client.container.execute_command(
+            resource_group_name=self.config.resource_group_name,
+            container_group_name=self.config.container_group_name,
+            container_name=self.config.container_group_name,
+            command=command,
+            terminal_size=ContainerExecRequestTerminalSize(rows=600, cols=800))
+
+        _start_exec_pipe(res.web_socket_uri, res.password)
+
 
 class ContainerGroupInstance():
     def __init__(self, logger, config):
@@ -90,7 +106,7 @@ class ContainerGroupInstance():
         if self._exists():
             return
 
-        ci_client = self._get_ci_client()
+        ci_client = _get_ci_client(self.config)
         ci = ContainerInstance(self.logger, self.config)
         container = ci.create()
 
@@ -118,7 +134,7 @@ class ContainerGroupInstance():
         if not self._exists():
             return
 
-        ci_client = self._get_ci_client()
+        ci_client = _get_ci_client(self.config)
 
         try:
             ci_client.container_groups.delete(
@@ -131,13 +147,17 @@ class ContainerGroupInstance():
         self.logger.container_group_deleted()
 
     def _exists(self) -> bool:
-        ci_client = self._get_ci_client()
+        ci_client = _get_ci_client(self.config)
 
         try:
-            ci_client.container_groups.get(
+            c = ci_client.container_groups.get(
                 self.config.resource_group_name,
                 self.config.container_group_name
             )
+
+            if c.containers[0].image != self.config.container_image:
+                return False
+
             self.logger.container_group_exist()
             return True
         except CloudError as ce:
@@ -148,10 +168,11 @@ class ContainerGroupInstance():
                 self.logger.container_group_not_exist()
                 return False
 
-    def _get_ci_client(self):
-        return ContainerInstanceManagementClient(
-            _get_credentials(self.config), self.config.subscription_id
-        )
+
+def _get_ci_client(config):
+    return ContainerInstanceManagementClient(
+        _get_credentials(config), config.subscription_id
+    )
 
 
 def _get_credentials(config) -> ServicePrincipalCredentials:
@@ -160,3 +181,11 @@ def _get_credentials(config) -> ServicePrincipalCredentials:
         secret=config.client_secret,
         tenant=config.tenant_id
     )
+
+
+def _start_exec_pipe(web_socket_uri, password):
+    ws = websocket.create_connection(web_socket_uri)
+    try:
+        ws.send(password)
+    except websocket.WebSocketException:
+        pass
