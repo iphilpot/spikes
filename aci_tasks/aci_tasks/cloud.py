@@ -44,8 +44,7 @@ class ResourceGroup():
         result = rg_client.resource_groups.delete(
             self.config.resource_group_name)
 
-        while result.done() is False:
-            time.sleep(1)
+        _poll_for_complete(result)
 
         self.logger.resource_group_deleted()
 
@@ -122,8 +121,7 @@ class ContainerGroupInstance():
                 self.config.container_group_name,
                 group)
 
-            while result.done() is False:
-                time.sleep(1)
+            _poll_for_complete(result)
         except CloudError as ce:
             if ce.inner_exception.error == "InaccessibleImage":
                 self.logger.logger.warning("Did you forget to push the image?")
@@ -146,6 +144,36 @@ class ContainerGroupInstance():
 
         self.logger.container_group_deleted()
 
+    def start(self):
+        if not self._exists():
+            return
+
+        ci_client = _get_ci_client(self.config)
+
+        try:
+            result = ci_client.container_groups.start(
+                self.config.resource_group_name,
+                self.config.container_group_name
+            )
+
+            _poll_for_complete(result)
+        except CloudError:
+            pass
+
+    def stop(self):
+        if not self._exists():
+            return
+
+        ci_client = _get_ci_client(self.config)
+
+        try:
+            ci_client.container_groups.stop(
+                self.config.resource_group_name,
+                self.config.container_group_name
+            )
+        except CloudError:
+            pass
+
     def _exists(self) -> bool:
         ci_client = _get_ci_client(self.config)
 
@@ -167,6 +195,11 @@ class ContainerGroupInstance():
             if ce.inner_exception.error == "ResourceNotFound":
                 self.logger.container_group_not_exist()
                 return False
+
+
+def _poll_for_complete(result):
+    while result.done() is False:
+        time.sleep(1)
 
 
 def _get_ci_client(config):
