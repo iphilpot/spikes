@@ -1,0 +1,121 @@
+{
+	"info": {
+		"_postman_id": "ac27b631-51d7-4ecf-96f7-8f51f71ff948",
+		"name": "SPIKE-DurableFunctions",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "SPIKE: dfunc - GET",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"messageType\": \"calc.get\",\n    \"entityName\": \"evtCounter\",\n    \"entityKey\": \"myCount\",\n    \"operationName\": null,\n    \"operationContent\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7071/api/evtCalc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"evtCalc"
+					]
+				},
+				"description": "Spike on durable functions (github/ianphil/spikes)"
+			},
+			"response": []
+		},
+		{
+			"name": "SPIKE: dfunc - ADD",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"messageType\": \"calc.add\",\n    \"entityName\": \"evtCounter\",\n    \"entityKey\": \"myCount\",\n    \"operationName\": \"add\",\n    \"operationContent\": \"1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7071/api/evtCalc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"evtCalc"
+					]
+				},
+				"description": "Spike on durable functions (github/ianphil/spikes)"
+			},
+			"response": []
+		},
+		{
+			"name": "SPIKE: dfunc - RESET",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"messageType\": \"calc.reset\",\n    \"entityName\": \"evtCounter\",\n    \"entityKey\": \"myCount\",\n    \"operationName\": \"reset\",\n    \"operationContent\": null\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7071/api/evtCalc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"evtCalc"
+					]
+				},
+				"description": "Spike on durable functions (github/ianphil/spikes)"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

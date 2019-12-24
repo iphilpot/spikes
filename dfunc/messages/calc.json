@@ -1,0 +1,23 @@
+[
+    {
+        "messageType": "calc.add",
+        "entityName": "evtCounter",
+        "entityKey": "myCount",
+        "operationName": "add",
+        "operationContent": "1"
+    },
+    {
+        "messageType": "calc.reset",
+        "entityName": "evtCounter",
+        "entityKey": "myCount",
+        "operationName": "reset",
+        "operationContent": null
+    },
+    {
+        "messageType": "calc.get",
+        "entityName": "evtCounter",
+        "entityKey": "myCount",
+        "operationName": null,
+        "operationContent": null
+    }
+]
