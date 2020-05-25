@@ -1,5 +1,13 @@
 namespace Aggregator.Functions.Orchestrations
 {
+
+    using System;
+    using System.Threading.Tasks;
+    using Microsoft.Azure.WebJobs;
+    using Microsoft.Azure.WebJobs.Extensions.DurableTask;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
+
     public static class Orchestrator
     {
         [FunctionName("Orchestrator")]
@@ -22,19 +30,19 @@ namespace Aggregator.Functions.Orchestrations
                 context.SignalEntity(entityId, "Aggregate", data);
 
                 // Two-way call to the entity which returns a value - awaits the response
-                Item sampleItem  = await context.CallEntityAsync<Item>(entityId, "GetItem", data.Id).ConfigureAwait(false);
+                Item sampleItem = await context.CallEntityAsync<Item>(entityId, "GetItem", data.Id).ConfigureAwait(false);
 
                 if (sampleItem != null)
                 {
                     log.LogInformation(sampleItem.Id);
                 }
-                              
+
             }
             catch (Exception e)
             {
                 log.LogError(e.Message);
-                
-            }          
+
+            }
 
         }
     }
