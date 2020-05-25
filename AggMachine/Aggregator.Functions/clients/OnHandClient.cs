@@ -5,9 +5,9 @@ namespace Aggregator.Functions.Clients
     using Microsoft.Azure.Documents;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using Microsoft.Azure.WebJobs.Extensions.DurableTask;
     using System.Threading.Tasks;
+    using Aggregator.Events;
 
     public static class OnHandUpdateFunc
     {
@@ -21,14 +21,6 @@ namespace Aggregator.Functions.Clients
             input, ILogger log,
             [DurableClient] IDurableOrchestrationClient starter)
         {
-            if (input == null)
-            {
-                log.LogWarning("Client has received no documents");
-                return;
-            }
-
-            //todo: determine whether or not we want to keep the rest of the payload if a singular document is invalid
-            //note: throwing an error here would "pause" the position of where we're processing
             foreach (var item in input)
             {
                 try

@@ -9,6 +9,7 @@ namespace Aggregator.Functions.Clients
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
+    using Aggregator.Events;
 
     public static class InventoryOrchestrator_HttpStart
     {

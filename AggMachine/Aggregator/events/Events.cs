@@ -1,5 +1,8 @@
 namespace Aggregator.Events
 {
+    using System;
+    using Newtonsoft.Json;
+
     public enum EventType
     {
         Shipment,
@@ -9,11 +12,11 @@ namespace Aggregator.Events
 
     public interface IEvent
     {
-        EventType Type {get;}
-        string Data {get; set;}
+        EventType Type { get; }
+        string Data { get; set; }
     }
 
-    public class ShipmentEvent : IEvent 
+    public class ShipmentEvent : IEvent
     {
         public ShipmentEvent()
         {

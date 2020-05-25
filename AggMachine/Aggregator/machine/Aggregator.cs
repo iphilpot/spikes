@@ -12,8 +12,6 @@ namespace Aggregator.Machine
         Resolved
     }
 
-    
-
     public class AggregatorMachine
     {
         class Transition

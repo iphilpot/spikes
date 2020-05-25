@@ -6,6 +6,7 @@ namespace Name
     using Microsoft.Azure.WebJobs.Extensions.DurableTask;
     using System.Collections.Generic;
     using Aggregator.Functions.Entities;
+    using Aggregator.Events;
 
     [JsonObject(MemberSerialization.OptIn)]
     public class StoreEntity : IStoreEntity

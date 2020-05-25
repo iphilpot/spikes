@@ -2,13 +2,12 @@ namespace Aggregator.Functions.Clients
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Azure.Documents;
     using Microsoft.Azure.WebJobs;
     using Microsoft.Azure.WebJobs.Extensions.DurableTask;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
+    using Aggregator.Events;
 
     public static class ShipmentUpdateFunc
     {
