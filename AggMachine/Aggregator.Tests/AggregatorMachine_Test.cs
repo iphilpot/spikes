@@ -1,6 +1,7 @@
 using System;
 using Xunit;
 using Aggregator.Machine;
+using Aggregator.Events;
 
 namespace Aggregator.UnitTests.Machines
 {
@@ -17,7 +18,8 @@ namespace Aggregator.UnitTests.Machines
         public void AggregatorMachine_OnHand_Moves_Aggregating()
         {
             var machine = new AggregatorMachine();
-            machine.MoveNext(Command.OnHand);
+            IEvent e = new OnHandEvent { Data = "Hello " };
+            machine.MoveNext(e);
             Assert.Equal(AggregatorState.Aggregating, machine.CurrentState);
         }
 
@@ -25,7 +27,8 @@ namespace Aggregator.UnitTests.Machines
         public void AggregatorMachine_Shipment_Moves_Aggregating()
         {
             var machine = new AggregatorMachine();
-            machine.MoveNext(Command.Shipment);
+            IEvent e = new ShipmentEvent { Data = "world!" };
+            machine.MoveNext(e);
             Assert.Equal(AggregatorState.Aggregating, machine.CurrentState);
         }
 
@@ -33,8 +36,10 @@ namespace Aggregator.UnitTests.Machines
         public void AggregatorMachine_Shipment_OnHand_Moves_Aggregating()
         {
             var machine = new AggregatorMachine();
-            machine.MoveNext(Command.Shipment);
-            machine.MoveNext(Command.OnHand);
+            IEvent onHandEvent = new OnHandEvent { Data = "Hello " };
+            IEvent shipmentEvent = new ShipmentEvent { Data = "world!" };
+            machine.MoveNext(shipmentEvent);
+            machine.MoveNext(onHandEvent);
             Assert.Equal(AggregatorState.Resolved, machine.CurrentState);
         }
 
@@ -42,8 +47,10 @@ namespace Aggregator.UnitTests.Machines
         public void AggregatorMachine_OnHand_Shipment_Moves_Aggregating()
         {
             var machine = new AggregatorMachine();
-            machine.MoveNext(Command.OnHand);
-            machine.MoveNext(Command.Shipment);
+            IEvent onHandEvent = new OnHandEvent { Data = "Hello " };
+            IEvent shipmentEvent = new ShipmentEvent { Data = "world!" };
+            machine.MoveNext(onHandEvent);
+            machine.MoveNext(shipmentEvent);
             Assert.Equal(AggregatorState.Resolved, machine.CurrentState);
         }
 
@@ -51,16 +58,20 @@ namespace Aggregator.UnitTests.Machines
         public void AggregatorMachine_Resolve_Moves_From_Resolved_Error()
         {
             var machine = new AggregatorMachine();
-            machine.MoveNext(Command.OnHand);
-            machine.MoveNext(Command.Shipment);
-            Assert.Throws<Exception>(() => machine.MoveNext(Command.Resolve));
+            IEvent onHandEvent = new OnHandEvent { Data = "Hello " };
+            IEvent shipmentEvent = new ShipmentEvent { Data = "world!" };
+            IEvent resolveEvent = new ResolveEvent { Data = "Hello world?" };
+            machine.MoveNext(onHandEvent);
+            machine.MoveNext(shipmentEvent);
+            Assert.Throws<Exception>(() => machine.MoveNext(resolveEvent));
         }
 
         [Fact]
         public void AggregatorMachine_Resolve_from_Inactive_Error()
         {
             var machine = new AggregatorMachine();
-            Assert.Throws<Exception>(() => machine.MoveNext(Command.Resolve));
+            IEvent resolveEvent = new ResolveEvent { Data = "Hello world?" };
+            Assert.Throws<Exception>(() => machine.MoveNext(resolveEvent));
         }
     }
 }

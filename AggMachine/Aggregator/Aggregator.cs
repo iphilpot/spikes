@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Aggregator.Operations;
+using Aggregator.Events;
 
 namespace Aggregator.Machine
 {
@@ -10,80 +12,65 @@ namespace Aggregator.Machine
         Resolved
     }
 
-    public enum Command
-    {
-        Shipment,
-        OnHand,
-        Resolve
-    }
+    
 
     public class AggregatorMachine
     {
         class Transition
         {
             readonly AggregatorState _currentState;
-            readonly Command _command;
+            readonly EventType _eventType;
 
-            public Transition(AggregatorState currentState, Command command)
+            public Transition(AggregatorState currentState, EventType eventType)
             {
                 _currentState = currentState;
-                _command = command;
+                _eventType = eventType;
             }
 
             public override int GetHashCode()
             {
-                return Tuple.Create(_currentState, _command).GetHashCode();
+                return Tuple.Create(_currentState, _eventType).GetHashCode();
             }
 
             public override bool Equals(object obj)
             {
                 Transition other = obj as Transition;
-                return other != null && this._currentState == other._currentState && this._command == other._command;
+                return other != null && this._currentState == other._currentState && this._eventType == other._eventType;
             }
         }
 
         Dictionary<Transition, AggregatorState> transitions;
         public AggregatorState CurrentState { get; private set; }
-
-        private bool shipmentReceived;
-        private bool onHandReceived;
+        private Aggregate _aggregate;
 
         public AggregatorMachine()
         {
             CurrentState = AggregatorState.Inactive;
+            _aggregate = new Aggregate();
             transitions = new Dictionary<Transition, AggregatorState>
             {
-                { new Transition(AggregatorState.Inactive, Command.OnHand), AggregatorState.Aggregating },
-                { new Transition(AggregatorState.Inactive, Command.Shipment), AggregatorState.Aggregating },
-                { new Transition(AggregatorState.Aggregating, Command.OnHand), AggregatorState.Aggregating },
-                { new Transition(AggregatorState.Aggregating, Command.Shipment), AggregatorState.Aggregating },
-                { new Transition(AggregatorState.Aggregating, Command.Resolve), AggregatorState.Resolved },
+                { new Transition(AggregatorState.Inactive, EventType.OnHand), AggregatorState.Aggregating },
+                { new Transition(AggregatorState.Inactive, EventType.Shipment), AggregatorState.Aggregating },
+                { new Transition(AggregatorState.Aggregating, EventType.OnHand), AggregatorState.Aggregating },
+                { new Transition(AggregatorState.Aggregating, EventType.Shipment), AggregatorState.Aggregating },
+                { new Transition(AggregatorState.Aggregating, EventType.Resolve), AggregatorState.Resolved },
             };
         }
 
-        private AggregatorState Next(Command command)
+        private AggregatorState Next(EventType eventType)
         {
-            Transition transition = new Transition(this.CurrentState, command);
+            Transition transition = new Transition(this.CurrentState, eventType);
             AggregatorState nextState;
             if (!transitions.TryGetValue(transition, out nextState))
-                throw new Exception($"Invalid transition: {this.CurrentState} -> {command}.");
+                throw new Exception($"Invalid transition: {this.CurrentState} -> {eventType}.");
             return nextState;
         }
 
-        public void MoveNext(Command command)
+        public void MoveNext(IEvent e)
         {
-            this.CurrentState = Next(command);
-
-            switch (this.CurrentState)
-            {
-                case AggregatorState.Aggregating:
-                    if (command == Command.Shipment) this.shipmentReceived = true;
-                    if (command == Command.OnHand) this.onHandReceived = true;
-                    if (this.onHandReceived && this.shipmentReceived) MoveNext(Command.Resolve);
-                    break;
-                default:
-                    break;
-            }
+            this.CurrentState = Next(e.Type);
+            IEvent isComplete = _aggregate.Execute(this.CurrentState, e);
+            if (isComplete != null) MoveNext(isComplete);
         }
     }
 }
