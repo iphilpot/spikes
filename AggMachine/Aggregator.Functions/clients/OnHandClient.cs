@@ -16,7 +16,8 @@ namespace Aggregator.Functions.Clients
             databaseName: "inventory",
             collectionName: "onHand",
             ConnectionStringSetting = "CosmosDBConnection",
-            LeaseCollectionName = "leases")]IReadOnlyList<Document>
+            LeaseCollectionName = "leases",
+            CreateLeaseCollectionIfNotExists = true)]IReadOnlyList<Document>
             input, ILogger log,
             [DurableClient] IDurableOrchestrationClient starter)
         {
