@@ -3,3 +3,8 @@ node_modules
 .vscode-test/
 *.vsix
 .env
+
+### DotnetCore ###
+# .NET Core build folders
+bin/
+obj/
