@@ -8,9 +8,9 @@ namespace Aggregator.Functions.Orchestrations
     using Microsoft.Extensions.Logging;
     using Aggregator.Events;
 
-    public static class Orchestrator
+    public static class StoreOrchestrator
     {
-        [FunctionName("Orchestrator")]
+        [FunctionName("StoreOrchestrator")]
         public static async Task RunOrchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context, ILogger log)
         {

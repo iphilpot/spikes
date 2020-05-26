@@ -9,9 +9,9 @@ namespace Aggregator.Functions.Clients
     using Microsoft.Extensions.Logging;
     using Aggregator.Events;
 
-    public static class ShipmentUpdateFunc
+    public static class ShipmentClient
     {
-        [FunctionName("ShipmentUpdateFunc")]
+        [FunctionName("ShipmentClient")]
         public static async Task Run([CosmosDBTrigger(
             databaseName: "inventory",
             collectionName: "shipments",
@@ -45,7 +45,7 @@ namespace Aggregator.Functions.Clients
                     var inventoryEvents = InputShipmentEvent.ResolveToInventoryEvents(inputItem);
                     foreach (var invEvent in inventoryEvents)
                     {
-                        await starter.StartNewAsync("Orchestrator", null, invEvent).ConfigureAwait(false);
+                        await starter.StartNewAsync("StoreOrchestrator", null, invEvent).ConfigureAwait(false);
                     }
                 }
                 catch (Exception e)

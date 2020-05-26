@@ -11,10 +11,10 @@ namespace Aggregator.Functions.Clients
     using Newtonsoft.Json;
     using Aggregator.Events;
 
-    public static class InventoryOrchestrator_HttpStart
+    public static class HttpStart
     {
-        [FunctionName("InventoryOrchestrator_HttpStart")]
-        public static async Task<IActionResult> HttpStart(
+        [FunctionName("HttpStart")]
+        public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
             [DurableClient] IDurableOrchestrationClient starter,
             ILogger log)
@@ -35,7 +35,7 @@ namespace Aggregator.Functions.Clients
             }
 
             // Function input comes from the request content.
-            string instanceId = await starter.StartNewAsync<InventoryEvent>("Orchestrator", incomingEvent)
+            string instanceId = await starter.StartNewAsync<InventoryEvent>("StoreOrchestrator", incomingEvent)
                 .ConfigureAwait(false);
 
             log.LogInformation($"Started orchestration with ID = '{instanceId}'.");

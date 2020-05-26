@@ -9,9 +9,9 @@ namespace Aggregator.Functions.Clients
     using System.Threading.Tasks;
     using Aggregator.Events;
 
-    public static class OnHandUpdateFunc
+    public static class OnHandClient
     {
-        [FunctionName("OnHandUpdateFunc")]
+        [FunctionName("OnHandClient")]
         public static async Task Run([CosmosDBTrigger(
             databaseName: "inventory",
             collectionName: "onHand",
@@ -38,7 +38,7 @@ namespace Aggregator.Functions.Clients
                     InventoryEvent inventoryEvent = InputOnHandEvent.ResolveToInventoryEvent(inputItem);
 
                     //re-serializes payload and sends it to orchestrator 
-                    await starter.StartNewAsync("Orchestrator", null, inventoryEvent).ConfigureAwait(false);
+                    await starter.StartNewAsync("StoreOrchestrator", null, inventoryEvent).ConfigureAwait(false);
                 }
                 catch (Exception e)
                 {
