@@ -45,7 +45,10 @@ namespace Aggregator.Functions.Clients
                     var inventoryEvents = InputShipmentEvent.ResolveToInventoryEvents(inputItem);
                     foreach (var invEvent in inventoryEvents)
                     {
-                        await starter.StartNewAsync("StoreOrchestrator", null, invEvent).ConfigureAwait(false);
+                        string instanceId = await starter.StartNewAsync("StoreOrchestrator", null, invEvent).ConfigureAwait(false);
+
+                        var mgmtUrls = starter.CreateHttpManagementPayload(instanceId);
+                        log.LogInformation(inputItem.id, mgmtUrls.ToString());
                     }
                 }
                 catch (Exception e)

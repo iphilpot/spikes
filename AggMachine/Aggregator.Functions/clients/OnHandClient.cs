@@ -38,7 +38,10 @@ namespace Aggregator.Functions.Clients
                     InventoryEvent inventoryEvent = InputOnHandEvent.ResolveToInventoryEvent(inputItem);
 
                     //re-serializes payload and sends it to orchestrator 
-                    await starter.StartNewAsync("StoreOrchestrator", null, inventoryEvent).ConfigureAwait(false);
+                    string instanceId = await starter.StartNewAsync("StoreOrchestrator", null, inventoryEvent).ConfigureAwait(false);
+
+                    var mgmtUrls = starter.CreateHttpManagementPayload(instanceId);
+                    log.LogInformation(inputItem.Id, mgmtUrls.ToString());
                 }
                 catch (Exception e)
                 {

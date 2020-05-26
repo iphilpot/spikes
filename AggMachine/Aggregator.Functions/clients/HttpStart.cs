@@ -10,6 +10,7 @@ namespace Aggregator.Functions.Clients
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
     using Aggregator.Events;
+    using Aggregator.Logging;
 
     public static class HttpStart
     {
@@ -19,6 +20,7 @@ namespace Aggregator.Functions.Clients
             [DurableClient] IDurableOrchestrationClient starter,
             ILogger log)
         {
+            ClientLogger logger = new ClientLogger(log);
             string data = await req.ReadAsStringAsync();
             InventoryEvent incomingEvent;
             try
@@ -36,8 +38,8 @@ namespace Aggregator.Functions.Clients
 
             // Function input comes from the request content.
             string instanceId = await starter.StartNewAsync<InventoryEvent>("StoreOrchestrator", incomingEvent);
-
-            log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
+            logger.LogManagmentUrls(starter, instanceId);
+            logger.LogOrchestrationStarted(instanceId);
 
             return starter.CreateCheckStatusResponse(req, instanceId);
         }
