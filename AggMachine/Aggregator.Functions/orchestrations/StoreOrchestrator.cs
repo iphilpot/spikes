@@ -7,43 +7,32 @@ namespace Aggregator.Functions.Orchestrations
     using Microsoft.Azure.WebJobs.Extensions.DurableTask;
     using Microsoft.Extensions.Logging;
     using Aggregator.Events;
+    using Aggregator.Functions.Entities;
 
     public static class StoreOrchestrator
     {
         [FunctionName("StoreOrchestrator")]
-        public static async Task RunOrchestrator(
+        public static async Task<Item> RunOrchestrator(
             [OrchestrationTrigger] IDurableOrchestrationContext context, ILogger log)
         {
+            InventoryEvent data = context.GetInput<InventoryEvent>();
 
-            // This will ALWAYS read the persisted state from the entity key!
-            // Destroy contents of entity's Azure Stor when modifying entity
-            try
+            if (data == null)
             {
-                InventoryEvent data = context.GetInput<InventoryEvent>();
-
-                if (data == null)
-                {
-                    throw new ArgumentException("data received to orchestrator is null");
-                }
-
-                var entityId = new EntityId("StoreEntity", data.StoreId);
-                context.SignalEntity(entityId, "Aggregate", data);
-
-                // Two-way call to the entity which returns a value - awaits the response
-                Item sampleItem = await context.CallEntityAsync<Item>(entityId, "GetItem", data.Id).ConfigureAwait(false);
-
-                if (sampleItem != null)
-                {
-                    log.LogInformation(sampleItem.Id);
-                }
-
-            }
-            catch (Exception e)
-            {
-                log.LogError(e.Message);
-
+                throw new ArgumentException("data received to orchestrator is null");
             }
 
+            var entityId = new EntityId("StoreEntity", data.StoreId);
+            var proxy = context.CreateEntityProxy<IStoreEntity>(entityId);
+            proxy.Aggregate(data);
+            Item sampleItem = await proxy.GetItem(data.Id);
+
+            if (sampleItem != null)
+            {
+                log.LogInformation(sampleItem.Id);
+            }
+
+            return sampleItem;
         }
     }
 }

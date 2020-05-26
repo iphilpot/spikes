@@ -35,13 +35,11 @@ namespace Aggregator.Functions.Clients
             }
 
             // Function input comes from the request content.
-            string instanceId = await starter.StartNewAsync<InventoryEvent>("StoreOrchestrator", incomingEvent)
-                .ConfigureAwait(false);
+            string instanceId = await starter.StartNewAsync<InventoryEvent>("StoreOrchestrator", incomingEvent);
 
             log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
 
-            var payload = starter.CreateHttpManagementPayload(instanceId);
-            return new OkObjectResult(payload);
+            return starter.CreateCheckStatusResponse(req, instanceId);
         }
     }
 }
