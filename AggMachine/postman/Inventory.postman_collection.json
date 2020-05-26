@@ -1,0 +1,68 @@
+{
+	"info": {
+		"_postman_id": "d52c1aac-66fc-4722-835b-32c16a39f5c3",
+		"name": "Inventory",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "onHandUpdate (HttpStart)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"div1:store005:0003400029005\",\n    \"divisionId\": \"div1\",\n    \"storeId\": \"store005\",\n    \"upc\": \"0003400029005\",\n    \"countAdjustment\": 1000,\n    \"type\": \"onHandUpdate\",\n    \"productName\": \"HERSHEY'S Milk Chocolate Bars\",\n    \"description\": \"HERSHEY'S Milk Chocolate Bars are the classic full size chocolate candy bars you’ve always enjoyed!\",\n    \"lastShipmentTimestamp\": null,\n    \"lastUpdateTimestamp\": \"2020-05-13 9:00:00 AM\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7071/api/HttpStart",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"HttpStart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "shipmentUpdate  (HttpStart)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"div1:store005:0003400029005\",\n    \"divisionId\": \"div1\",\n    \"storeId\": \"store005\",\n    \"upc\": \"0003400029005\",\n    \"countAdjustment\": 3000,\n    \"type\": \"shipmentUpdate\",\n    \"productName\": null,\n    \"description\": null,\n    \"lastShipmentTimestamp\": \"2020-05-13 9:00:00 AM\",\n    \"lastUpdateTimestamp\": \"2020-05-13 9:00:00 AM\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7071/api/HttpStart",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7071",
+					"path": [
+						"api",
+						"HttpStart"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

@@ -7,6 +7,6 @@
     "CosmosEndpoint": "",
     "CosmosDatabaseName": "inventory",
     "CosmosMDCName": "mdc",
-    "CosmosDBConnectionString": ""
+    "CosmosDBConnection": ""
   }
 }
