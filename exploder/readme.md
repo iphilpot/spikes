@@ -4,7 +4,7 @@ This is a simple python script `src/main.py` that takes a zip file `src/data/fil
 
 ``` bash
 storage_account
-└── files.zip
+└── files-zip
     ├── file1
     └── file2
 
