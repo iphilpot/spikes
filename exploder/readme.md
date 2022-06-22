@@ -10,3 +10,12 @@ storage_account
 
 1 directory, 2 files
 ```
+
+```mermaid
+sequenceDiagram
+    File.zip->>TmpDir: Extract files
+    TmpDir->>Blob Storage: Upload files
+    loop Clean up
+        TmpDir->>TmpDir: Delete TmpDir
+    end
+```
