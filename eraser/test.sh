@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Setup Local Kind Cluster using config file
-kind create cluster --config kind-config.yaml
+kind create cluster --config kind-config.yaml# sleep for 2 minutes
 
 # Set kubectl context to kind cluster
 kubectl cluster-info --context kind-kind
@@ -28,7 +28,7 @@ docker exec kind-worker ctr -n k8s.io images list | awk '{print $1}' | grep alpi
 # Remove pod
 kubectl delete pod alpine-cve
 
-# sleep for 1 minute
+# sleep for 2 minutes
 for i in {120..1}; do
     echo "Sleeping for $i seconds..."
     sleep 1
@@ -56,7 +56,7 @@ docker exec kind-worker ctr -n k8s.io images list | awk '{print $1}' | grep alpi
 # Remove pod
 kubectl delete pod alpine-no-cve
 
-# sleep for 1 minute
+# sleep for 2 minutes
 for i in {120..1}; do
     echo "Sleeping for $i seconds..."
     sleep 1
@@ -93,7 +93,7 @@ kubectl delete pod alpine-cve
 # Remove pod
 kubectl delete pod alpine-no-cve
 
-# sleep for 1 minute
+# sleep for 2 minutes
 for i in {120..1}; do
     echo "Sleeping for $i seconds..."
     sleep 1
